@@ -21,9 +21,7 @@ conda env create -f bbbp_env.yml
 Run the desired models or analysis using the provided Python scripts:
 
 python run_DNN.py            # Run Deep Neural Network
-
 python run_GNN.py            # Run Graph Neural Network
-
-python run_XAI_model.py      # Run full pipeline with XAI
-
-python SHAP_analysis.py      # Interpret predictions with SHAP
+python run_XAI_model.py      # Save trained XAI model 
+python SHAP_analysis.py      # Interpret predictions with SHAP 
+python synergy_group_analysis.py      # Interpret synergistic effect between substructures  
