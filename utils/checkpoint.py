@@ -3,14 +3,14 @@ import os
 
 OUTPUT_DIR = "preds"
 
-def save_best_checkpoint(model, optimizer, best_epoch, best_score, j):
+def save_best_checkpoint(model, optimizer, best_epoch, best_score, j, architecture):
     checkpoint = {
         'model': model.state_dict(),
         'optimizer': optimizer.state_dict(),
         'best_epoch': best_epoch,
         'best_score': best_score
     }
-    ckpt_dir = os.path.join(OUTPUT_DIR, "checkpoints")
+    ckpt_dir = os.path.join(OUTPUT_DIR, "checkpoints" + "_" + architecture)
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
     save_path = os.path.join(ckpt_dir, f'best_ckpt' + str(j) + '.pth')
@@ -28,8 +28,8 @@ def load_checkpoint(model, optimizer, filepath="checkpoint.pth"):
     print(f"Checkpoint loaded from epoch {epoch} with loss {loss:.4f}")
     return model, optimizer, epoch, loss
 
-def load_best_result(model, j):
-    ckpt_dir = os.path.join(OUTPUT_DIR, "checkpoints")
+def load_best_result(model, j, architecture):
+    ckpt_dir = os.path.join(OUTPUT_DIR, "checkpoints" + "_" + architecture)
     best_ckpt_path = os.path.join(ckpt_dir, f'best_ckpt' + str(j) + '.pth')
     ckpt = torch.load(best_ckpt_path)
     model.load_state_dict(ckpt['model'])
