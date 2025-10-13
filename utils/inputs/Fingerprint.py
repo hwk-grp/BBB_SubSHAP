@@ -5,11 +5,14 @@ from rdkit.Avalon import pyAvalonTools
 import numpy as np
 
 from utils.inputs import EMACCSkeys
+from utils.inputs import Pubchem_keys
 
 def generate_fingerprints(smiles_list):
     maccs_fingerprints = []
     morgan_fingerprints = []
     pubchem_fingerprints = []
+
+    pubchem_generator = Pubchem_keys.PubChemFingerprintGenerator()
 
     for smiles in smiles_list:
         # SMILES to MOL type
@@ -27,8 +30,8 @@ def generate_fingerprints(smiles_list):
         morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius=3, nBits=2048)
         morgan_fingerprints.append(np.array(morgan_fp))
 
-        # Generating PubChem Fingerprint (Avalon Fingerprint)
-        pubchem_fp = pyAvalonTools.GetAvalonFP(mol, nBits=881)
+        # Generating PubChem Fingerprint
+        pubchem_fp = pubchem_generator.generate(mol)
         pubchem_fingerprints.append(np.array(pubchem_fp))
 
     maccs_fingerprints = np.array(maccs_fingerprints)
