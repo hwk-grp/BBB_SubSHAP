@@ -1,6 +1,6 @@
 import torch
 import numpy
-from sklearn.metrics import classification_report, roc_auc_score, f1_score, accuracy_score
+from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, confusion_matrix
 from utils.util import softmax
 
 
@@ -50,7 +50,12 @@ def train(model, data_loader, criterion, optimizer, scheduler):
     train_auc = roc_auc_score(targets_list_all, preds_list_all_np)
     train_p_auc = roc_auc_score(targets_list_all, preds_list_all_softmax[:, 1])
 
-    return train_loss / len(data_loader), train_acc, train_f1, train_auc, train_p_auc
+    tn, fp, fn, tp = confusion_matrix(targets_list_all, preds_list_all_np).ravel()
+    train_sensitivity = tp / (tp + fn) if (tp + fn) != 0 else 0.0  # True positive rate (recall)
+    train_specificity = tn / (tn + fp) if (tn + fp) != 0 else 0.0  # True negative rate
+    train_fpr_value = fp / (fp + tn) if (fp + tn) != 0 else 0.0  # False positive rate
+
+    return (train_loss / len(data_loader), train_acc, train_f1, train_auc, train_p_auc, train_sensitivity, train_specificity, train_fpr_value)
 
 
 def test(model, data_loader, criterion):
@@ -95,4 +100,9 @@ def test(model, data_loader, criterion):
         test_auc = roc_auc_score(targets_list_all, preds_list_all_np)
         test_p_auc = roc_auc_score(targets_list_all, preds_list_all_softmax[:, 1])
 
-    return test_loss / len(data_loader), test_acc, test_f1, test_auc, test_p_auc
+        tn, fp, fn, tp = confusion_matrix(targets_list_all, preds_list_all_np).ravel()
+        test_sensitivity = tp / (tp + fn) if (tp + fn) != 0 else 0.0  # True positive rate (recall)
+        test_specificity = tn / (tn + fp) if (tn + fp) != 0 else 0.0  # True negative rate
+        test_fpr_value = fp / (fp + tn) if (fp + tn) != 0 else 0.0  # False positive rate
+
+    return (test_loss / len(data_loader), test_acc, test_f1, test_auc, test_p_auc, test_sensitivity, test_specificity, test_fpr_value)
